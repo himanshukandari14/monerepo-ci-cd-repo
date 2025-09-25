@@ -1,0 +1,29 @@
+name: Deploy to staging
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    name: Push to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Execute remote SSH commands using key
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 15.206.69.12
+          username: ubuntu
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
+          port: 22
+          script: |
+            cd monerepo-ci-cd-repo/ && git pull
+            pnpm install
+            pnpm run build
+            pm2 restart http-server
+            pm2 restart ws-server
+            pm2 restart web-fe
