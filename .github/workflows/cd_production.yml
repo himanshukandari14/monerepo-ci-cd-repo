@@ -1,0 +1,40 @@
+name: Deploy to staging
+
+on:
+  push:
+    branches: ["production"]
+
+jobs:
+  deploy:
+    name: Push to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Execute remote SSH commands using key
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 13.234.120.192
+          username: ubuntu
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
+          port: 22
+          script: |
+            # Load NVM and Node environment
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 20  # replace with your installed Node version
+
+            # Deploy steps
+            cd monerepo-ci-cd-repo/
+            git pull origin main
+            npm install -g pnpm pm2   # ensure pnpm & pm2 available
+            pnpm install
+            pnpm run build
+
+            # Restart PM2 processes
+            pm2 restart http-server || pm2 start http-server
+            pm2 restart ws-server || pm2 start ws-server
+            pm2 restart web-fe || pm2 start web-fe
+

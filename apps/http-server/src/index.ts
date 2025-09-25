@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.send("Hi there");
+    res.send("Hi there, if u are seeing this that means this chnage is deployed by ci/cd");
 })
 
 app.post("/signup", async (req, res) => {
