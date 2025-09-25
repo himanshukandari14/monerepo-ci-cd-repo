@@ -8,7 +8,7 @@ export default async function Home() {
     <div>
       {/* {user?.username}
       {user?.password} */}
-      hello this is next js app
+      hello this is next js app, if u are seeing this that means this chnage is deployed by ci/cd
     </div>
   );
 }

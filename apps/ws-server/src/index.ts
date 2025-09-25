@@ -12,5 +12,5 @@ server.on("connection", async (socket) => {
             password: Math.random().toString()
         }
     })
-    socket.send("Hi there you are connected to the server");
+    socket.send("Hi there you are connected to the server,if u are seeing this that means this chnage is deployed by ci/cd");
 })
