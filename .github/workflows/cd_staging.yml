@@ -21,9 +21,14 @@ jobs:
           key: ${{ secrets.PRIVATE_SSH_KEY }}
           port: 22
           script: |
-            cd monerepo-ci-cd-repo/ && git pull
+            cd monerepo-ci-cd-repo/
+            git pull
+            export PATH=$HOME/.nvm/versions/node/v20.5.1/bin:$PATH
+            npm install -g pnpm pm2
             pnpm install
             pnpm run build
             pm2 restart http-server
             pm2 restart ws-server
             pm2 restart web-fe
+
+      
