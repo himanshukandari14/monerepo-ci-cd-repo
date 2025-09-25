@@ -21,14 +21,20 @@ jobs:
           key: ${{ secrets.PRIVATE_SSH_KEY }}
           port: 22
           script: |
+            # Load NVM and Node environment
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 20  # replace with your installed Node version
+
+            # Deploy steps
             cd monerepo-ci-cd-repo/
-            git pull
-            export PATH=$HOME/.nvm/versions/node/v20.5.1/bin:$PATH
-            npm install -g pnpm pm2
+            git pull origin main
+            npm install -g pnpm pm2   # ensure pnpm & pm2 available
             pnpm install
             pnpm run build
-            pm2 restart http-server
-            pm2 restart ws-server
-            pm2 restart web-fe
 
-      
+            # Restart PM2 processes
+            pm2 restart http-server || pm2 start http-server
+            pm2 restart ws-server || pm2 start ws-server
+            pm2 restart web-fe || pm2 start web-fe
+
